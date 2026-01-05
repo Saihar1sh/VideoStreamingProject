@@ -4,8 +4,6 @@ services:
   redis:
     image: redis:7
     container_name: media-redis
-    ports:
-      - "6379:6379"
     volumes:
       - redis-data:/data
     restart: unless-stopped
@@ -20,7 +18,7 @@ services:
     ports:
       - "4000:4000"
     environment:
-      - REDIS_URL=redis://redis:6379
+      REDIS_URL: redis://redis:6379
     depends_on:
       - redis
     restart: unless-stopped
@@ -31,11 +29,13 @@ services:
     working_dir: /app
     volumes:
       - ./frontend:/app
-    command: sh -c "npm install && npm start"
+      - /app/node_modules
     ports:
       - "3000:3000"
+    command: sh -c "npm install && npm start"
     environment:
-      - CHOKIDAR_USEPOLLING=true
+      CHOKIDAR_USEPOLLING: "true"
+      WATCHPACK_POLLING: "true"
     depends_on:
       - backend
     restart: unless-stopped
